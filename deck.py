@@ -1,5 +1,6 @@
 from card import Card
 from random import shuffle
+from pygame import display, event, mouse, MOUSEBUTTONDOWN
 
 class Deck:
     def __init__(self, size=100) -> None:

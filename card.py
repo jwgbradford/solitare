@@ -96,10 +96,10 @@ class Card:
         self.suit = suit
         self.value = value
         self.scale = scale
-        self.back_image = self.make_image(BLUE)
-        self.rect = self.back_image.get_rect()
+        self.back_image = None
+        self.front_image = None
 
-    def make_image(self, colour=WHITE) -> Surface:
+    def make_image(self, colour=BLUE) -> Surface:
         image = Surface((self.scale * 0.7, self.scale))
         offset = self.scale // 4
         line_offset = self.scale // 8
@@ -124,6 +124,9 @@ class Card:
         draw.line(image, BLACK, (self.scale * 0.7 - 1, line_offset), (self.scale * 0.7 - 1, self.scale - line_offset), 1)
         draw.line(image, BLACK, (line_offset, self.scale - 1), (self.scale * 0.7 - line_offset, self.scale - 1), 1)
         return image
+
+    def add_back_image(self) -> None:
+        self.back_image = self.make_image()
 
     def add_front_image(self) -> None:
         self.front_image = self.make_image(WHITE)
