@@ -98,6 +98,11 @@ class Card:
         self.scale = scale
         self.back_image = None
         self.front_image = None
+        self.face_up = False
+
+    def draw_card(self) -> None:
+        self.face_up = True
+        self.add_front_image()
 
     def make_image(self, colour=BLUE) -> Surface:
         image = Surface((self.scale * 0.7, self.scale))
