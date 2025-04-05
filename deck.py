@@ -54,6 +54,7 @@ class Deck:
         - are we clicking on a deck to move a single card to the final stacks (handle on mouse_up)
         - are we already moving a stack?
         '''
+        cards = []
         if (self.deck_rect.collidepoint(mouse_pos) and 
                 not self.movable and
                 not moving_stack and
@@ -78,6 +79,36 @@ class Deck:
         else:
             pass
         return moving_stack, cards
+
+    def drop_cards(self, mouse_pos, card_stack):
+        if (self.deck_rect.collidepoint(mouse_pos) and
+                self.next_card_in_stack(card_stack)):
+            self.cards.append(card_stack)
+            return False
+
+    def next_card_in_stack(self, card_stack):
+        last_card = self.cards[-1]
+        first_card = card_stack[0]
+        '''
+        check suits different
+        check value +=1
+        '''
+        if (
+            (
+            (last_card.suit == 'h' or last_card.suit == 'd'
+            and
+            first_card.suit == 'c' or first_card.suit == 's')
+            or
+            (last_card.suit == 'c' or last_card.suit == 's'
+            and
+            first_card.suit == 'h' or first_card.suit == 'd')
+            )
+            and
+            first_card.value == last_card.value + 1
+            ):
+            return True
+        else:
+            return False
 
     def get_stack(self, mouse_pos) -> list[Card]:
         card_stack = []
