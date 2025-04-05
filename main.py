@@ -1,5 +1,5 @@
 from deck import Deck
-from pygame import display, time, event, mouse, rect, QUIT, KEYDOWN, MOUSEBUTTONDOWN
+from pygame import display, time, event, mouse, rect, QUIT, KEYDOWN, MOUSEBUTTONDOWN, K_SPACE, K_ESCAPE
 from CONSTANTS import GREEN, deck_pos
 
 class MyGame:
@@ -9,23 +9,42 @@ class MyGame:
 
     def add_decks(self) -> None:
         self.my_decks = []
+        '''
+        0 - main deck
+        1 - discard deck
+        2 - final stack - hearts
+        3 - final stack - diamonds
+        4 - final stack - spades
+        5 - final stack - clubs
+        6 - game stack
+        7 - game stack
+        8 - game stack
+        9 - game stack
+        10 - game stack
+        11 - game stack
+        12 - game stack
+        13 - mobile stack
+        '''
         for i in range(14):
-            if i == 1:
-                self.my_decks.append(Deck(pos=deck_pos[i], movable=True))
-            else:
-                self.my_decks.append(Deck(pos=deck_pos[i], movable=False))
+                self.my_decks.append(Deck(pos=deck_pos[i]))
         self.my_decks[0].create_deck()
         self.my_decks[0].shuffle()
+        self.my_decks[-1].movable = True
 
     def handle_mouse_click(self) -> None:
         moving_stack = True
+        card_stack = []
         while moving_stack:
             moving_stack = False
             event.get()
             if mouse.get_pressed()[0]:
                 for deck in self.my_decks:
-                    moving_stack = deck.handle_click(mouse.get_pos(), moving_stack)
+                    moving_stack, card_stack = deck.handle_click(mouse.get_pos(), moving_stack)
                 self.update_screen()
+            else:
+                # drop cards on new deck
+                for deck in self.my_decks:
+                    moving_stack = deck.drop_cards(mouse.get_pos(), card_stack)
 
     def update_screen(self, moving_card = False, pos = (0,0)) -> None:
         self.screen.fill((GREEN))
@@ -41,7 +60,10 @@ class MyGame:
                 if each_event.type == QUIT:
                     run = False
                 elif each_event.type == KEYDOWN:
-                    self.my_decks[0].draw()
+                    if each_event.key == K_ESCAPE:
+                        run = False
+                    elif each_event.key == K_SPACE:
+                        self.my_decks[0].draw_card()
                 elif each_event.type == MOUSEBUTTONDOWN:
                     if mouse.get_pressed()[0]:
                         self.handle_mouse_click()
