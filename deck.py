@@ -4,22 +4,22 @@ from CONSTANTS import TRANSPARENT
 from random import shuffle
 
 class Deck:
-    def __init__(self, pos=(0,0)) -> None:
+    def __init__(self, scale=100, pos=(0,0)) -> None:
         self.cards : list[Card] = []
-        self.deck_display = Surface((140, 200))
+        self.deck_display = Surface((scale * 0.7, scale))
         self.deck_display.set_colorkey(TRANSPARENT)
         self.deck_display.fill(TRANSPARENT)
         self.deck_rect = self.deck_display.get_rect()
-        self.deck_rect.topleft = pos
+        self.deck_rect.center = pos
         self.movable = False
         self.last_mouse_pos = (-1,-1) # off the screen
 
-    def create_deck(self, size=100) -> list[Card]:
+    def create_deck(self, scale=100) -> list[Card]:
         suits = ['h', 'd', 's', 'c']
         ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
         for suit in suits:
             for rank in ranks:
-                self.cards.append(Card(size, suit, rank))
+                self.cards.append(Card(scale, suit, rank))
 
     def shuffle(self) -> None:
         shuffle(self.cards)
@@ -48,7 +48,7 @@ class Deck:
         for card in card_stack:
             self.cards.append(card)
 
-    def handle_click(self, mouse_pos, moving_stack) -> tuple[bool, list[Card]]:
+    def handle_click(self, mouse_pos : tuple[int, int], moving_stack : list[Card]) -> tuple[bool, list[Card]]:
         '''
         conditions to check:
         - are we clicking on the main deck, to draw a new card
@@ -57,38 +57,34 @@ class Deck:
         - are we already moving a stack?
         '''
         cards = []
-        if (self.deck_rect.collidepoint(mouse_pos) and 
-                not self.movable and
-                not moving_stack and
-                len(self.cards) > 0 and
-                not self.cards[-1].face_up):        
-            # draw new card
-            cards = [self.draw_card()]
-        elif (self.deck_rect.collidepoint(mouse_pos) and
-                not self.movable and
+        if self.deck_rect.collidepoint(mouse_pos):
+            if (not self.movable and
                 not moving_stack and
                 len(self.cards) > 0):
-            # pick up stack of cards
-            moving_stack = True
-            self.last_mouse_pos = mouse_pos
-            cards = self.get_stack(mouse_pos)
-        elif (self.deck_rect.collidepoint(mouse_pos) and
-                self.movable and
-                moving_stack and
-                len(self.cards) > 0):
-            #we're the stack being moved
-            self.deck_rect.center = mouse_pos
+                if not self.cards[-1].face_up:
+                    # draw new card
+                    cards = [self.draw_card()]
+                else:
+                    # pick up stack of cards
+                    moving_stack = True
+                    self.last_mouse_pos = mouse_pos
+                    cards = self.get_stack(mouse_pos)
+            else:
+                #we're the stack being moved
+                self.deck_rect.center = mouse_pos
         else:
             pass
         return moving_stack, cards
 
-    def drop_cards(self, mouse_pos, card_stack):
+    def drop_cards(self, mouse_pos : tuple[int,int], card_stack : list[Card]) -> list[Card]:
         if (self.deck_rect.collidepoint(mouse_pos) and
-                self.next_card_in_stack(card_stack)):
+                self.next_card_in_stack(card_stack) and
+                card_stack not in self.cards):
             self.cards.append(card_stack)
-            return False
+            return []
+        return card_stack
 
-    def next_card_in_stack(self, card_stack):
+    def next_card_in_stack(self, card_stack : list[Card]) -> bool:
         last_card = self.cards[-1]
         first_card = card_stack[0]
         '''

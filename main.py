@@ -4,10 +4,11 @@ from CONSTANTS import GREEN, deck_pos
 
 class MyGame:
     def __init__(self) -> None:
-        self.screen = display.set_mode((1200, 600))
+        self.screen = display.set_mode((1500, 600))
         self.add_decks()
 
     def add_decks(self) -> None:
+        size = 200
         self.my_decks = []
         '''
         0 - main deck
@@ -26,8 +27,9 @@ class MyGame:
         13 - mobile stack
         '''
         for i in range(14):
-                self.my_decks.append(Deck(pos=deck_pos[i]))
-        self.my_decks[0].create_deck()
+                pos = (deck_pos[i][0] * size - size / 2, deck_pos[i][1] * size * 1.25 - size / 2)
+                self.my_decks.append(Deck(scale=size, pos=pos))
+        self.my_decks[0].create_deck(scale=size)
         self.my_decks[0].shuffle()
         self.my_decks[-1].movable = True
 
@@ -36,20 +38,20 @@ class MyGame:
         card_stack = []
         while moving_stack:
             event.get()
-            if mouse.get_pressed()[0]:
-                for deck in self.my_decks:
+            if mouse.get_pressed()[0]: # left mouse button
+                for deck in self.my_decks: # check each deck in turn
                     moving_stack, card_stack = deck.handle_click(mouse.get_pos(), moving_stack)
                     if len(card_stack) > 0:
-                        if moving_stack:
+                        if moving_stack: # add the stack of cards to move, to the mobile deck
                             self.my_decks[-1].add_card(card_stack)
-                        else:
+                        else: # add card to discard deck
                             self.my_decks[1].add_card(card_stack)
                         card_stack = []
                 self.update_screen()
             else:
                 # drop cards on new deck
                 for deck in self.my_decks:
-                    moving_stack = deck.drop_cards(mouse.get_pos(), self.my_decks[1])
+                    card_stack = deck.drop_cards(mouse.get_pos(), self.my_decks[1].my_deck)
         self.my_decks[1] = []
 
     def update_screen(self) -> None:
