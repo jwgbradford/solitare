@@ -100,7 +100,7 @@ class Card:
         self.front_image = None
         self.face_up = False
 
-    def draw_card(self) -> None:
+    def flip_card(self) -> None:
         self.face_up = True
         self.add_front_image()
 
@@ -137,6 +137,7 @@ class Card:
         self.front_image = self.make_image(WHITE)
         self.add_corner_values()
         self.add_values()
+        self.rect = self.front_image.get_rect()
 
     def add_corner_values(self) -> None:
         offset = self.scale // 20

@@ -35,18 +35,24 @@ class MyGame:
         moving_stack = True
         card_stack = []
         while moving_stack:
-            moving_stack = False
             event.get()
             if mouse.get_pressed()[0]:
                 for deck in self.my_decks:
                     moving_stack, card_stack = deck.handle_click(mouse.get_pos(), moving_stack)
+                    if len(card_stack) > 0:
+                        if moving_stack:
+                            self.my_decks[-1].add_card(card_stack)
+                        else:
+                            self.my_decks[1].add_card(card_stack)
+                        card_stack = []
                 self.update_screen()
             else:
                 # drop cards on new deck
                 for deck in self.my_decks:
-                    moving_stack = deck.drop_cards(mouse.get_pos(), card_stack)
+                    moving_stack = deck.drop_cards(mouse.get_pos(), self.my_decks[1])
+        self.my_decks[1] = []
 
-    def update_screen(self, moving_card = False, pos = (0,0)) -> None:
+    def update_screen(self) -> None:
         self.screen.fill((GREEN))
         for deck in self.my_decks:
             deck.draw_deck()
@@ -63,7 +69,7 @@ class MyGame:
                     if each_event.key == K_ESCAPE:
                         run = False
                     elif each_event.key == K_SPACE:
-                        self.my_decks[0].draw_card()
+                        self.my_decks[1].add_card(self.my_decks[0].draw_card())
                 elif each_event.type == MOUSEBUTTONDOWN:
                     if mouse.get_pressed()[0]:
                         self.handle_mouse_click()

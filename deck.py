@@ -25,16 +25,17 @@ class Deck:
         shuffle(self.cards)
         self.cards[-1].add_back_image()
 
-    def draw_card(self) -> None:
+    def draw_card(self) -> list[Card]:
         if len(self.cards) > 0:
             new_card = self.cards.pop()
             if len(self.cards) > 0:
-                self.cards[-1].add_front_image()
-            return new_card
+                self.cards[-1].add_back_image()
+            new_card.flip_card()
+            return [new_card]
         else:
             return None
 
-    def draw_deck(self) -> Card:
+    def draw_deck(self) -> None:
         if len(self.cards) > 0:
             if self.cards[-1].face_up:
                 self.deck_display.blit(self.cards[-1].front_image, (0, 0))
@@ -43,8 +44,9 @@ class Deck:
         else:   
             pass
         
-    def add(self, card: Card) -> None:
-        self.cards.append(card)
+    def add_card(self, card_stack : list[Card]) -> None:
+        for card in card_stack:
+            self.cards.append(card)
 
     def handle_click(self, mouse_pos, moving_stack) -> tuple[bool, list[Card]]:
         '''
