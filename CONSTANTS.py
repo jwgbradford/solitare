@@ -6,35 +6,61 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PINK = (255, 102, 204)
 
-'''
-0 - main deck
-1 - discard deck
-2 - final stack - hearts
-3 - final stack - diamonds
-4 - final stack - spades
-5 - final stack - clubs
-6 - game stack
-7 - game stack
-8 - game stack
-9 - game stack
-10 - game stack
-11 - game stack
-12 - game stack
-13 - mobile stack
-'''
-deck_pos = [
-    (1, 1),
-    (2, 1),
-    (4, 1),
-    (5, 1),
-    (6, 1),
-    (7, 1),
-    (1, 2),
-    (2, 2),
-    (3, 2),
-    (4, 2),
-    (5, 2),
-    (6, 2),
-    (7, 2),
-    (0,0)
+DECKS = [
+    {"name" : "main",
+        "pos" : (1, 1),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "discard",
+        "pos" : (2, 1),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "hearts",
+        "pos" : (4, 1),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "diamonds",
+        "pos" : (5, 1),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "spades",
+        "pos" : (6, 1),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "clubs",
+        "pos" : (7, 1),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "game1",
+        "pos" : (1, 2),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "game2",
+        "pos" : (2, 2),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "game3",
+        "pos" : (3, 2),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "game4",
+        "pos" : (4, 2),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "game5",
+        "pos" : (5, 2),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "game6",
+        "pos" : (6, 2),
+        "size" : 200,
+        "movable" : False},
+    {"name" : "game7",
+        "pos" : (7, 2),
+        "size" : 200,
+        "movable" : False},
+    {"name": 'mobile',
+        'pos': (0,0),
+        'size': 0,
+        "movable" : True}
 ]
