@@ -5,11 +5,11 @@ from random import shuffle
 from math import pi
 
 class Deck:
-    def __init__(self, data) -> None:
-        self.name = data['name']
+    def __init__(self, **kwargs) -> None:
+        self.__dict__.update(kwargs)
         self.cards : list[Card] = []
-        self.deck_display = self.empty_deck(data['size'])
-        self.set_pos(data)
+        self.deck_display = self.empty_deck()
+        self.set_pos()
         self.last_mouse_pos = (-1,-1) # off the screen
 
     def empty_deck(self, scale) -> Surface:
@@ -30,11 +30,10 @@ class Deck:
         draw.line(image, BLACK, (line_offset, scale - 1), (scale * 0.7 - line_offset, scale - 1), 1)
         return image
 
-    def set_pos(self, data) -> None:
+    def set_pos(self) -> None:
         self.deck_rect = self.deck_display.get_rect()
-        pos = (data['pos'][0] * data['size'] - data['size'] / 2, data['pos'][1] * data['size'] * 1.25 - data['size'] / 2)
-        self.deck_rect.center = pos
-        self.movable = data['movable']
+        xy_pos = (self.pos[0] * self.size - self.size / 2, self.pos[1] * self.size * 1.25 - self.size / 2)
+        self.deck_rect.center = xy_pos
 
     def create_deck(self, ) -> list[Card]:
         suits = ['h', 'd', 's', 'c']
