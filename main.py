@@ -8,45 +8,45 @@ class MyGame:
         self.add_decks()
 
     def add_decks(self) -> None:
-        self.my_decks = []
+        self.my_decks = {}
         for data in DECKS:
-            print(data)
-            self.my_decks.append(Deck(**data))
-        self.my_decks[0].create_deck()
-        self.my_decks[0].shuffle()
+            self.my_decks[data["name"]] = Deck(**data)
+        self.my_decks["main"].create_deck()
+        self.my_decks["main"].shuffle()
 
     def handle_mouse_click(self) -> None:
         moving_stack = False
         card_stack = []
-        pickup_deck = 99
+        pickup_deck = "nul"
         while True:
             event.get()
             if mouse.get_pressed()[0]: # left mouse button
-                for index, deck in enumerate(self.my_decks): # check each deck in turn
-                    moving_stack, card_stack = deck.handle_click(mouse.get_pos(), moving_stack)
+                for deck in self.my_decks: # check each deck in turn
+                    moving_stack, card_stack = self.my_decks[deck].handle_click(mouse.get_pos(), moving_stack)
                     if len(card_stack) > 0:
                         if moving_stack: # add the stack of cards to move, to the mobile deck
-                            self.my_decks[-1].add_card(card_stack)
-                            pickup_deck = index
+                            self.my_decks["mobile"].add_card(card_stack)
+                            pickup_deck = deck
                         else: # add card to discard deck
-                            self.my_decks[1].add_card(card_stack)
+                            self.my_decks["discard"].add_card(card_stack)
                         card_stack = []
                 self.update_screen()
-            elif len(self.my_decks[-1].cards) > 0: # we're moving cards
+            elif len(self.my_decks["mobile"].cards) > 0: # we're moving cards
                 # drop cards on new deck
-                for deck in range(len(self.my_decks) - 1): 
-                    card_stack = self.my_decks[deck].drop_cards(mouse.get_pos(), self.my_decks[-1].cards)
+                for deck in self.my_decks:
+                    if deck != "mobile": 
+                        card_stack = self.my_decks[deck].drop_cards(mouse.get_pos(), self.my_decks["mobile"].cards)
                 if len(card_stack) > 0: # not dropped on a deck
                     self.my_decks[pickup_deck].add_card(card_stack)
                     card_stack = []
                 break
-        self.my_decks[-1].cards = [] # clear mobile deck
+        self.my_decks["mobile"].cards = [] # clear mobile deck
 
     def update_screen(self) -> None:
         self.screen.fill((GREEN))
         for deck in self.my_decks:
-            deck.draw_deck()
-            self.screen.blit(deck.deck_display, deck.deck_rect)
+            deck_image, deck_rect = self.my_decks[deck].draw_deck()
+            self.screen.blit(deck_image, deck_rect)
         display.flip()
 
     def run(self) -> None:
@@ -59,7 +59,7 @@ class MyGame:
                     if each_event.key == K_ESCAPE: # quit
                         run = False
                     elif each_event.key == K_SPACE: # pick another card
-                        self.my_decks[1].add_card(self.my_decks[0].draw_card())
+                        self.my_decks["discard"].add_card(self.my_decks["main"].draw_card())
                 elif each_event.type == MOUSEBUTTONDOWN:
                     if mouse.get_pressed()[0]:
                         self.handle_mouse_click()
