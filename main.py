@@ -10,10 +10,10 @@ class MyGame:
     def add_decks(self) -> None:
         self.my_decks = []
         for data in DECKS:
-                self.my_decks.append(Deck(data))
+            print(data)
+            self.my_decks.append(Deck(**data))
         self.my_decks[0].create_deck()
         self.my_decks[0].shuffle()
-        self.my_decks[-1].movable = True
 
     def handle_mouse_click(self) -> None:
         moving_stack = False

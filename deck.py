@@ -12,22 +12,22 @@ class Deck:
         self.set_pos()
         self.last_mouse_pos = (-1,-1) # off the screen
 
-    def empty_deck(self, scale) -> Surface:
-        image = Surface((scale * 0.7, scale))
+    def empty_deck(self) -> Surface:
+        image = Surface((self.size * 0.7, self.size))
         image.set_colorkey(TRANSPARENT)
         image.fill(TRANSPARENT)
-        offset = scale // 4
-        line_offset = scale // 8
+        offset = self.size // 4
+        line_offset = self.size // 8
         # draw borders
         draw.arc(image, BLACK, (0, 0, offset, offset), pi / 2, pi, 1)
-        draw.arc(image, BLACK, (0, scale - offset, offset, offset), pi, 3 * pi / 2, 1)
-        draw.arc(image, BLACK, (scale * 0.7 - offset, 0, offset, offset), 0, pi / 2, 1)
-        draw.arc(image, BLACK, (scale * 0.7 - offset, scale - offset, offset, offset), 3 * pi / 2, 0, 1)
+        draw.arc(image, BLACK, (0, self.size - offset, offset, offset), pi, 3 * pi / 2, 1)
+        draw.arc(image, BLACK, (self.size * 0.7 - offset, 0, offset, offset), 0, pi / 2, 1)
+        draw.arc(image, BLACK, (self.size * 0.7 - offset, self.size - offset, offset, offset), 3 * pi / 2, 0, 1)
         # draw sides
-        draw.line(image, BLACK, (line_offset, 0), (scale * 0.7 - line_offset, 0), 1)
-        draw.line(image, BLACK, (0, line_offset), (0, scale - line_offset), 1)
-        draw.line(image, BLACK, (scale * 0.7 - 1, line_offset), (scale * 0.7 - 1, scale - line_offset), 1)
-        draw.line(image, BLACK, (line_offset, scale - 1), (scale * 0.7 - line_offset, scale - 1), 1)
+        draw.line(image, BLACK, (line_offset, 0), (self.size * 0.7 - line_offset, 0), 1)
+        draw.line(image, BLACK, (0, line_offset), (0, self.size - line_offset), 1)
+        draw.line(image, BLACK, (self.size * 0.7 - 1, line_offset), (self.size * 0.7 - 1, self.size - line_offset), 1)
+        draw.line(image, BLACK, (line_offset, self.size - 1), (self.size * 0.7 - line_offset, self.size - 1), 1)
         return image
 
     def set_pos(self) -> None:
@@ -38,10 +38,9 @@ class Deck:
     def create_deck(self, ) -> list[Card]:
         suits = ['h', 'd', 's', 'c']
         ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-        scale = self.deck_display.get_height()
         for suit in suits:
             for rank in ranks:
-                self.cards.append(Card(scale, suit, rank))
+                self.cards.append(Card(self.size, suit, rank))
 
     def shuffle(self) -> None:
         shuffle(self.cards)
