@@ -10,12 +10,19 @@ class MyGame:
     def add_decks(self) -> None:
         self.my_decks = {}
         for data in DECKS:
+<<<<<<< HEAD
             self.my_decks[data['name']] = (Deck(**data))
         self.my_decks['main'].create_deck()
         self.my_decks['main'].shuffle()
+=======
+            self.my_decks[data["name"]] = Deck(**data)
+        self.my_decks["main"].create_deck()
+        self.my_decks["main"].shuffle()
+>>>>>>> 5669aa47568e3a9613e1c46bf9bf00efee3f3d68
 
     def handle_mouse_click(self, pickup_deck) -> None:
         card_stack = []
+<<<<<<< HEAD
         moving_stack = False
         for deck in self.my_decks: # check each deck in turn
             moving_stack, card_stack = deck.handle_click(mouse.get_pos(), moving_stack)
@@ -36,12 +43,43 @@ class MyGame:
                 self.my_decks[pickup_deck].add_card(card_stack)
                 card_stack = []
         self.my_decks['mobile'].cards = [] # clear mobile deck
+=======
+        pickup_deck = "nul"
+        while True:
+            event.get()
+            if mouse.get_pressed()[0]: # left mouse button
+                for deck in self.my_decks: # check each deck in turn
+                    moving_stack, card_stack = self.my_decks[deck].handle_click(mouse.get_pos(), moving_stack)
+                    if len(card_stack) > 0:
+                        if moving_stack: # add the stack of cards to move, to the mobile deck
+                            self.my_decks["mobile"].add_card(card_stack)
+                            pickup_deck = deck
+                        else: # add card to discard deck
+                            self.my_decks["discard"].add_card(card_stack)
+                        card_stack = []
+                self.update_screen()
+            elif len(self.my_decks["mobile"].cards) > 0: # we're moving cards
+                # drop cards on new deck
+                for deck in self.my_decks:
+                    if deck != "mobile": 
+                        card_stack = self.my_decks[deck].drop_cards(mouse.get_pos(), self.my_decks["mobile"].cards)
+                if len(card_stack) > 0: # not dropped on a deck
+                    self.my_decks[pickup_deck].add_card(card_stack)
+                    card_stack = []
+                break
+        self.my_decks["mobile"].cards = [] # clear mobile deck
+>>>>>>> 5669aa47568e3a9613e1c46bf9bf00efee3f3d68
 
     def update_screen(self) -> None:
         self.screen.fill((GREEN))
         for deck in self.my_decks:
+<<<<<<< HEAD
             self.my_decks[deck].draw_deck()
             self.screen.blit(self.my_decks[deck].deck_display, self.my_decks[deck].deck_rect)
+=======
+            deck_image, deck_rect = self.my_decks[deck].draw_deck()
+            self.screen.blit(deck_image, deck_rect)
+>>>>>>> 5669aa47568e3a9613e1c46bf9bf00efee3f3d68
         display.flip()
 
     def run(self) -> None:
@@ -55,7 +93,11 @@ class MyGame:
                     if each_event.key == K_ESCAPE: # quit
                         run = False
                     elif each_event.key == K_SPACE: # pick another card
+<<<<<<< HEAD
                         self.my_decks['discard'].add_card(self.my_decks['main'].draw_card())
+=======
+                        self.my_decks["discard"].add_card(self.my_decks["main"].draw_card())
+>>>>>>> 5669aa47568e3a9613e1c46bf9bf00efee3f3d68
                 elif each_event.type == MOUSEBUTTONDOWN:
                     if mouse.get_pressed()[0]:
                         pickup_deck = self.handle_mouse_click(pickup_deck)

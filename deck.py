@@ -44,30 +44,31 @@ class Deck:
 
     def shuffle(self) -> None:
         shuffle(self.cards)
-        self.cards[-1].add_back_image()
+        self.cards[0].add_back_image()
 
     def draw_card(self) -> list[Card]:
         if len(self.cards) > 0:
-            new_card = self.cards.pop()
+            new_card = self.cards.pop(0)
             if len(self.cards) > 0:
-                self.cards[-1].add_back_image()
+                self.cards[0].add_back_image()
             new_card.flip_card()
             return [new_card]
         else:
             return None
 
-    def draw_deck(self) -> None:
+    def draw_deck(self) -> Surface:
         if len(self.cards) > 0:
-            if self.cards[-1].face_up:
-                self.deck_display.blit(self.cards[-1].front_image, (0, 0))
+            if self.cards[0].face_up:
+                self.deck_display.blit(self.cards[0].front_image, (0, 0))
             else:
-                self.deck_display.blit(self.cards[-1].back_image, (0, 0))
+                self.deck_display.blit(self.cards[0].back_image, (0, 0))
         else:   
             pass
+        return self.deck_display, self.deck_rect
         
     def add_card(self, card_stack : list[Card]) -> None:
         for card in card_stack:
-            self.cards.append(card)
+            self.cards.insert(0, card)
 
     def handle_click(self, mouse_pos : tuple[int, int], moving_stack : bool) -> tuple[bool, list[Card]]:
         '''
