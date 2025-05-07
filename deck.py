@@ -82,7 +82,7 @@ class Deck:
             if (not self.movable and
                     not moving_stack and
                     len(self.cards) > 0): # not the mobile stack, not yet moving a stack, and there are cards in current deck
-                if not self.cards[-1].face_up: # top card is face down
+                if self.name == 'main': # we're clicking on the main deck
                     # draw new card
                     cards = self.draw_card()
                     #print('draw card')
