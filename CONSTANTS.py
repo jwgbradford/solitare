@@ -61,6 +61,6 @@ DECKS = [
         "movable" : False},
     {"name": 'mobile',
         'pos': (0,0),
-        'size': 0,
+        'size': 200,
         "movable" : True}
 ]

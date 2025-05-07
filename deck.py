@@ -16,6 +16,8 @@ class Deck:
         image = Surface((self.size * 0.7, self.size))
         image.set_colorkey(TRANSPARENT)
         image.fill(TRANSPARENT)
+        if self.name == 'mobile':
+            return image
         offset = self.size // 4
         line_offset = self.size // 8
         # draw borders
@@ -48,9 +50,9 @@ class Deck:
 
     def draw_card(self) -> list[Card]:
         if len(self.cards) > 0:
-            new_card = self.cards.pop(0)
+            new_card = self.cards.pop(-1)
             if len(self.cards) > 0:
-                self.cards[0].add_back_image()
+                self.cards[-1].add_back_image()
             new_card.flip_card()
             return [new_card]
         else:
@@ -62,8 +64,8 @@ class Deck:
                 self.deck_display.blit(self.cards[0].front_image, (0, 0))
             else:
                 self.deck_display.blit(self.cards[0].back_image, (0, 0))
-        else:   
-            pass
+        else:
+            self.deck_display = self.empty_deck()
         return self.deck_display, self.deck_rect
         
     def add_card(self, card_stack : list[Card]) -> None:
@@ -91,26 +93,22 @@ class Deck:
                     moving_stack = True
                     self.last_mouse_pos = mouse_pos
                     cards = self.get_stack(mouse_pos)
-                    #print(f'pick up stack {len(cards)}')
-            elif (self.movable and 
-                    moving_stack): # we're holding some cards
-                self.deck_rect.center = mouse_pos
-                #print(f'movable {self.movable} , moving_stack {moving_stack}, length {len(self.cards)}')
-            else:
-                pass
-        else:
-            pass
+                    #print(f'pick up stack {len(cards)}')}')
         return moving_stack, cards
 
     def drop_cards(self, mouse_pos : tuple[int,int], card_stack : list[Card]) -> list[Card]:
+        if self.name == 'mobile':
+            return card_stack
         if self.deck_rect.collidepoint(mouse_pos):
             if (self.next_card_in_stack(card_stack) and
                 card_stack not in self.cards):
-                self.cards.append(card_stack)
+                self.add_card(card_stack)
                 return []
         return card_stack
 
     def next_card_in_stack(self, card_stack : list[Card]) -> bool:
+        if len(self.cards) == 0:
+            return True
         last_card = self.cards[-1]
         first_card = card_stack[0]
         '''
@@ -135,6 +133,8 @@ class Deck:
             return False
 
     def get_stack(self, mouse_pos) -> list[Card]:
+        if self.name == 'discard':
+            return [self.cards.pop(0)] # if we're the discard pile, just return the top card
         card_stack = []
         card_index = 0
         # find the top card that was clicked
