@@ -39,7 +39,7 @@ class Deck:
 
     def create_deck(self, ) -> list[Card]:
         suits = ['h', 'd', 's', 'c']
-        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         for suit in suits:
             for rank in ranks:
                 self.cards.append(Card(self.size, suit, rank))
@@ -61,15 +61,22 @@ class Deck:
     def draw_deck(self) -> Surface:
         if len(self.cards) > 0:
             if self.cards[0].face_up:
-                self.deck_display.blit(self.cards[0].front_image, (0, 0))
+                self.deck_display.blit(self.cards[0].front_image, self.cards[0].position)
             else:
-                self.deck_display.blit(self.cards[0].back_image, (0, 0))
+                self.deck_display.blit(self.cards[0].back_image, self.cards[0].position)
         else:
             self.deck_display = self.empty_deck()
         return self.deck_display, self.deck_rect
         
     def add_card(self, card_stack : list[Card]) -> None:
         for card in card_stack:
+            if len(self.cards) == 0:
+                card.position = (0, 0)
+            elif 'game' in self.name:
+                card.position = (0, self.cards[0].position[1] + self.size * 0.1)
+            else:
+                card.position = (0, 0)
+
             self.cards.insert(0, card)
 
     def handle_click(self, mouse_pos : tuple[int, int], moving_stack : bool) -> tuple[bool, list[Card]]:
@@ -100,8 +107,7 @@ class Deck:
         if self.name == 'mobile':
             return card_stack
         if self.deck_rect.collidepoint(mouse_pos):
-            if (self.next_card_in_stack(card_stack) and
-                card_stack not in self.cards):
+            if self.next_card_in_stack(card_stack):
                 self.add_card(card_stack)
                 return []
         return card_stack
@@ -109,24 +115,24 @@ class Deck:
     def next_card_in_stack(self, card_stack : list[Card]) -> bool:
         if len(self.cards) == 0:
             return True
-        last_card = self.cards[-1]
-        first_card = card_stack[0]
+        top_card = self.cards[0]
+        bottom_card = card_stack[-1]
         '''
         check suits different
         check value +=1
         '''
         if (
             (
-            (last_card.suit == 'h' or last_card.suit == 'd'
-            and
-            first_card.suit == 'c' or first_card.suit == 's')
+            (top_card.suit == 'h' or top_card.suit == 'd'
+                and
+                bottom_card.suit == 'c' or bottom_card.suit == 's')
             or
-            (last_card.suit == 'c' or last_card.suit == 's'
-            and
-            first_card.suit == 'h' or first_card.suit == 'd')
+            (top_card.suit == 'c' or top_card.suit == 's'
+                and
+                bottom_card.suit == 'h' or bottom_card.suit == 'd')
             )
             and
-            first_card.value == last_card.value + 1
+                top_card.value == bottom_card.value  + 1
             ):
             return True
         else:

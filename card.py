@@ -99,10 +99,25 @@ class Card:
         self.back_image = None
         self.front_image = None
         self.face_up = False
+        self.position = (0, 0)
 
     def flip_card(self) -> None:
         self.face_up = True
         self.add_front_image()
+        self.convert_values()
+
+    def convert_values(self) -> None:
+        match self.value:
+            case 'A':
+                self.value = 1
+            case 'J':
+                self.value = 11
+            case 'Q':
+                self.value = 12
+            case 'K':
+                self.value = 13
+            case _:
+                self.value = int(self.value)
 
     def make_image(self, colour=BLUE) -> Surface:
         image = Surface((self.scale * 0.7, self.scale))
