@@ -60,10 +60,12 @@ class Deck:
 
     def draw_deck(self) -> None:
         if len(self.cards) > 0:
-            if self.cards[0].face_up:
-                self.deck_display.blit(self.cards[0].front_image, self.cards[0].position)
-            else:
-                self.deck_display.blit(self.cards[0].back_image, self.cards[0].position)
+            for card in self.cards:
+                if card.face_up:
+                    self.deck_display.blit(card.front_image, card.position)
+                else:
+                    self.deck_display.blit(card.back_image, card.position)
+                    break
         else:
             self.deck_display = self.empty_deck()
         return
@@ -73,10 +75,11 @@ class Deck:
             if len(self.cards) == 0:
                 card.position = (0, 0)
             elif 'game' in self.name:
-                card.position = (0, self.cards[0].position[1] + self.size * 0.1)
+                card.position = (0, self.cards[-1].position[1] + self.size * 0.1)
             else:
                 card.position = (0, 0)
-            self.cards.insert(0, card)
+            self.cards.append(card)
+            #self.cards.insert(0, card)
 
     def handle_click(self, mouse_pos : tuple[int, int], moving_stack : bool) -> tuple[bool, list[Card]]:
         '''
@@ -114,8 +117,8 @@ class Deck:
     def next_card_in_stack(self, card_stack : list[Card]) -> bool:
         if len(self.cards) == 0:
             return True
-        top_card = self.cards[0]
-        bottom_card = card_stack[-1]
+        top_card = self.cards[-1]
+        bottom_card = card_stack[0]
         '''
         check suits different
         check value +=1
@@ -139,13 +142,7 @@ class Deck:
 
     def get_stack(self, mouse_pos) -> list[Card]:
         if self.name == 'discard':
-            return [self.cards.pop(0)] # if we're the discard pile, or there's only one card in the deck, just return the top card
-        elif 'game' in self.name:
-            return self.get_game_stack(mouse_pos)
-        else:
-            return []
-
-    def get_game_stack(self, mouse_pos) -> list[Card]:
+            return [self.cards.pop()] # if we're the discard pile, just return the top card
         card_stack = []
         card_index = 0
         # find the top card that was clicked
@@ -155,7 +152,8 @@ class Deck:
                 card_index = index + 1 # to account for enumerate starting at 0
             else:
                 break
-        for _ in range(card_index):
-            card_stack.append(self.cards.pop(0))
+        print(card_index)
+        for _ in range(card_index, 0, -1):
+            card_stack.append(self.cards.pop())
         #card_stack.reverse()
         return card_stack
