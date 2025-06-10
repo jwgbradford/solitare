@@ -4,7 +4,7 @@ from CONSTANTS import GREEN, DECKS
 
 class MyGame:
     def __init__(self) -> None:
-        self.screen = display.set_mode((1500, 600))
+        self.screen = display.set_mode((1500, 900))
         self.add_decks()
 
     def add_decks(self) -> None:

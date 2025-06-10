@@ -9,11 +9,15 @@ class Deck:
         self.__dict__.update(kwargs)
         self.cards : list[Card] = []
         self.deck_display = self.empty_deck()
+        self.deck_rect = self.deck_display.get_rect()
         self.set_pos()
         self.last_mouse_pos = (-1,-1) # off the screen
 
     def empty_deck(self) -> Surface:
-        image = Surface((self.size * 0.7, self.size))
+        if 'game' in self.name: # game decks are larger
+            image = Surface((self.size * 0.7, self.size + self.size * 9 * 0.3))
+        else:
+            image = Surface((self.size * 0.7, self.size))
         image.set_colorkey(TRANSPARENT)
         image.fill(TRANSPARENT)
         if self.name == 'mobile':
@@ -33,9 +37,8 @@ class Deck:
         return image
 
     def set_pos(self) -> None:
-        self.deck_rect = self.deck_display.get_rect()
-        xy_pos = (self.pos[0] * self.size - self.size / 2, self.pos[1] * self.size * 1.25 - self.size / 2)
-        self.deck_rect.center = xy_pos
+        xy_pos = (self.pos[0] * self.size - self.size / 2, self.pos[1] * self.size * 1.25 - self.size)
+        self.deck_rect.topleft = xy_pos
 
     def create_deck(self, ) -> list[Card]:
         suits = ['h', 'd', 's', 'c']
