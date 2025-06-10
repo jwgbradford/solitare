@@ -146,7 +146,7 @@ class Card:
         return image
 
     def add_back_image(self) -> None:
-        self.back_image = self.make_image()
+        self.back_image = self.make_image(BLUE)
 
     def add_front_image(self) -> None:
         self.front_image = self.make_image(WHITE)

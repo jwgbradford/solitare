@@ -58,7 +58,7 @@ class Deck:
         else:
             return None
 
-    def draw_deck(self) -> Surface:
+    def draw_deck(self) -> None:
         if len(self.cards) > 0:
             if self.cards[0].face_up:
                 self.deck_display.blit(self.cards[0].front_image, self.cards[0].position)
@@ -66,7 +66,7 @@ class Deck:
                 self.deck_display.blit(self.cards[0].back_image, self.cards[0].position)
         else:
             self.deck_display = self.empty_deck()
-        return self.deck_display, self.deck_rect
+        return
         
     def add_card(self, card_stack : list[Card]) -> None:
         for card in card_stack:
@@ -76,7 +76,6 @@ class Deck:
                 card.position = (0, self.cards[0].position[1] + self.size * 0.1)
             else:
                 card.position = (0, 0)
-
             self.cards.insert(0, card)
 
     def handle_click(self, mouse_pos : tuple[int, int], moving_stack : bool) -> tuple[bool, list[Card]]:
@@ -140,16 +139,23 @@ class Deck:
 
     def get_stack(self, mouse_pos) -> list[Card]:
         if self.name == 'discard':
-            return [self.cards.pop(0)] # if we're the discard pile, just return the top card
+            return [self.cards.pop(0)] # if we're the discard pile, or there's only one card in the deck, just return the top card
+        elif 'game' in self.name:
+            return self.get_game_stack(mouse_pos)
+        else:
+            return []
+
+    def get_game_stack(self, mouse_pos) -> list[Card]:
         card_stack = []
         card_index = 0
         # find the top card that was clicked
         for index, card in enumerate(self.cards):
+            card.rect.topleft = (self.deck_rect.x, self.deck_rect.y + index * self.size * 0.1) # update rect to current card position
             if card.rect.collidepoint(mouse_pos):
-                card_index = index
+                card_index = index + 1 # to account for enumerate starting at 0
             else:
                 break
-        for _ in range(card_index, len(self.cards)):
-            card_stack.append(self.cards.pop(card_index))
-        card_stack.reverse()
+        for _ in range(card_index):
+            card_stack.append(self.cards.pop(0))
+        #card_stack.reverse()
         return card_stack
