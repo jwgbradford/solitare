@@ -158,5 +158,5 @@ class Deck:
                 break
         for _ in range(card_index, 0, -1):
             card_stack.append(self.cards.pop())
-        #card_stack.reverse()
+        card_stack.reverse()
         return card_stack
