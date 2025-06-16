@@ -62,6 +62,7 @@ class Deck:
             return None
 
     def draw_deck(self) -> None:
+        self.deck_display = self.empty_deck()
         if len(self.cards) > 0:
             for card in self.cards:
                 if card.face_up:
@@ -69,8 +70,6 @@ class Deck:
                 else:
                     self.deck_display.blit(card.back_image, card.position)
                     break
-        else:
-            self.deck_display = self.empty_deck()
         return
         
     def add_card(self, card_stack : list[Card]) -> None:
@@ -147,16 +146,19 @@ class Deck:
         if self.name == 'discard':
             return [self.cards.pop()] # if we're the discard pile, just return the top card
         card_stack = []
-        card_index = 0
+        card_index = -1
         # find the top card that was clicked
-        # not working as intented
         for index, card in enumerate(self.cards):
-            card.rect.topleft = (self.deck_rect.x, self.deck_rect.y + index * self.size * 0.3) # update rect to current card position
+            card.rect.topleft = (self.deck_rect.x, self.deck_rect.y + index * self.size * 0.1) # update rect to current card position
             if card.rect.collidepoint(mouse_pos):
-                card_index = index + 1 # to account for enumerate starting at 0
+                card_index += 1
             else:
                 break
-        for _ in range(card_index, 0, -1):
+        if card_index == -1:  # no card was clicked
+            return []
+        # now we have the index of the top card, we can get the stack
+        card_pickup_loop = len(self.cards) - card_index
+        for _ in range(card_pickup_loop):
             card_stack.append(self.cards.pop())
         card_stack.reverse()
         return card_stack
