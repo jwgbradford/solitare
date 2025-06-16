@@ -149,13 +149,13 @@ class Deck:
         card_stack = []
         card_index = 0
         # find the top card that was clicked
+        # not working as intented
         for index, card in enumerate(self.cards):
-            card.rect.topleft = (self.deck_rect.x, self.deck_rect.y + index * self.size * 0.1) # update rect to current card position
+            card.rect.topleft = (self.deck_rect.x, self.deck_rect.y + index * self.size * 0.3) # update rect to current card position
             if card.rect.collidepoint(mouse_pos):
                 card_index = index + 1 # to account for enumerate starting at 0
             else:
                 break
-        print(card_index)
         for _ in range(card_index, 0, -1):
             card_stack.append(self.cards.pop())
         #card_stack.reverse()
