@@ -49,7 +49,7 @@ class Deck:
 
     def shuffle(self) -> None:
         shuffle(self.cards)
-        self.cards[0].add_back_image()
+        self.cards[-1].add_back_image()
 
     def draw_card(self) -> list[Card]:
         if len(self.cards) > 0:
@@ -64,12 +64,11 @@ class Deck:
     def draw_deck(self) -> None:
         self.deck_display = self.empty_deck()
         if len(self.cards) > 0:
-            for card in self.cards:
-                if card.face_up:
+            if self.name == 'main':
+                self.deck_display.blit(self.cards[-1].back_image, self.cards[-1].position)
+            else:
+                for card in self.cards:
                     self.deck_display.blit(card.front_image, card.position)
-                else:
-                    self.deck_display.blit(card.back_image, card.position)
-                    break
         return
         
     def add_card(self, card_stack : list[Card]) -> None:
@@ -81,7 +80,6 @@ class Deck:
             else:
                 card.position = (0, 0)
             self.cards.append(card)
-            #self.cards.insert(0, card)
 
     def handle_click(self, mouse_pos : tuple[int, int], moving_stack : bool) -> tuple[bool, list[Card]]:
         '''
@@ -105,6 +103,8 @@ class Deck:
                     self.last_mouse_pos = mouse_pos
                     cards = self.get_stack(mouse_pos)
                     #print(f'pick up stack {len(cards)}')}')
+            elif self.name == 'main' and len(self.cards) == 0: # clicked on empty main deck to restock
+                moving_stack = True
         return moving_stack, cards
 
     def drop_cards(self, mouse_pos : tuple[int,int], card_stack : list[Card]) -> list[Card]:
@@ -117,28 +117,48 @@ class Deck:
         return card_stack
 
     def next_card_in_stack(self, card_stack : list[Card]) -> bool:
-        if len(self.cards) == 0:
-            return True
-        top_card = self.cards[-1]
-        bottom_card = card_stack[0]
+        if len(self.cards) == 0: # empty deck
+            if 'final' in self.name: # final stacks start with aces
+                if card_stack[0].value == 1: # ace
+                    return True
+                else:
+                    return False
+            elif 'game' in self.name: # empty game stacks can take any card
+                return True
+            else: # you can't drop cards on the discard pile or main deck
+                return False 
+        my_top_card = self.cards[-1]
+        moving_bottom_card = card_stack[0]
         '''
         check suits different
         check value +=1
         '''
-        if (
+        if ('final' in self.name 
+            and
+            len(card_stack) == 1 
+            and
             (
-            (top_card.suit == 'h' or top_card.suit == 'd'
-                and
-                bottom_card.suit == 'c' or bottom_card.suit == 's')
-            or
-            (top_card.suit == 'c' or top_card.suit == 's'
-                and
-                bottom_card.suit == 'h' or bottom_card.suit == 'd')
+            (my_top_card.suit == moving_bottom_card.suit)
             )
             and
-                top_card.value == bottom_card.value  + 1
+                moving_bottom_card.value == my_top_card.value + 1
             ):
-            return True
+            return True # fina stacks take same suits in ascending order
+        elif ('game' in self.name 
+            and
+            (
+            (my_top_card.suit == 'h' or my_top_card.suit == 'd'
+                and
+                moving_bottom_card.suit == 'c' or moving_bottom_card.suit == 's')
+            or
+            (my_top_card.suit == 'c' or my_top_card.suit == 's'
+                and
+                moving_bottom_card.suit == 'h' or moving_bottom_card.suit == 'd')
+            )
+            and
+                moving_bottom_card.value == my_top_card.value - 1
+            ):
+            return True # game stacks take different suits in descending order
         else:
             return False
 

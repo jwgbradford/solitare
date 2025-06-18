@@ -14,7 +14,7 @@ class MyGame:
         self.my_decks['main'].create_deck()
         self.my_decks['main'].shuffle()
 
-    def handle_mouse_click(self, pickup_deck) -> None:
+    def handle_mouse_click(self, pickup_deck) -> str:
         card_stack = []
         moving_stack = False
         for deck in self.my_decks: # check each deck in turn
@@ -26,6 +26,12 @@ class MyGame:
                 else: # add card to discard deck
                     self.my_decks['discard'].add_card(card_stack)
                 return pickup_deck
+            elif len(card_stack) == 0 and moving_stack: # clicked on empty main deck
+                card_stack = self.my_decks['discard'].cards
+                self.my_decks['discard'].cards = [] # clear discard deck
+                self.my_decks['main'].add_card(card_stack)
+                self.my_decks['main'].cards.reverse()
+
 
     def handle_stack_drop(self, pickup_deck) -> None:
         if len(self.my_decks['mobile'].cards) > 0: # we're moving cards

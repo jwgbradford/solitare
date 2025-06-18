@@ -103,8 +103,9 @@ class Card:
 
     def flip_card(self) -> None:
         self.face_up = True
-        self.add_front_image()
-        self.convert_values()
+        if self.front_image is None:
+            self.add_front_image()
+            self.convert_values()
 
     def convert_values(self) -> None:
         match self.value:
