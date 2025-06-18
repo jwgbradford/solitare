@@ -30,7 +30,7 @@ class MyGame:
                 card_stack = self.my_decks['discard'].cards
                 self.my_decks['discard'].cards = [] # clear discard deck
                 self.my_decks['main'].add_card(card_stack)
-                #self.my_decks['main'].cards.reverse()
+                #self.my_decks['main'].cards.reverse() # flip the stack
 
     def handle_stack_drop(self, pickup_deck) -> None:
         if len(self.my_decks['mobile'].cards) > 0: # we're moving cards
