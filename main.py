@@ -10,7 +10,7 @@ class MyGame:
     def add_decks(self) -> None:
         self.my_decks = {}
         for data in DECKS:
-            self.my_decks[data['name']] = (Deck(**data))
+            self.my_decks[data['name']] = (Deck(data))
         self.my_decks['main'].create_deck()
         self.my_decks['main'].shuffle()
 
@@ -30,8 +30,7 @@ class MyGame:
                 card_stack = self.my_decks['discard'].cards
                 self.my_decks['discard'].cards = [] # clear discard deck
                 self.my_decks['main'].add_card(card_stack)
-                self.my_decks['main'].cards.reverse()
-
+                #self.my_decks['main'].cards.reverse()
 
     def handle_stack_drop(self, pickup_deck) -> None:
         if len(self.my_decks['mobile'].cards) > 0: # we're moving cards

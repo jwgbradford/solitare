@@ -1,12 +1,15 @@
-from CONSTANTS import TRANSPARENT, BLACK
+from CONSTANTS import TRANSPARENT, BLACK, SIZE
 from card import Card
 from pygame import Surface, draw
 from random import shuffle
 from math import pi
 
 class Deck:
-    def __init__(self, **kwargs) -> None:
-        self.__dict__.update(kwargs)
+    def __init__(self, data) -> None:
+        self.name = data['name']
+        self.pos = data['pos']
+        self.movable = data['movable']
+        self.size = SIZE
         self.cards : list[Card] = []
         self.deck_display = self.empty_deck()
         self.deck_rect = self.deck_display.get_rect()
@@ -15,11 +18,11 @@ class Deck:
 
     def empty_deck(self) -> Surface:
         if 'game' in self.name: # game decks are larger
-            image = Surface((self.size * 0.7, self.size + self.size * 9 * 0.3))
+            image = Surface((self.size * 0.7, self.size + self.size *12 * 0.1))
         else:
             image = Surface((self.size * 0.7, self.size))
         image.set_colorkey(TRANSPARENT)
-        image.fill(TRANSPARENT)
+        image.fill(TRANSPARENT) # dark background
         if self.name == 'mobile':
             return image
         offset = self.size // 4
@@ -40,12 +43,12 @@ class Deck:
         xy_pos = (self.pos[0] * self.size - self.size / 2, self.pos[1] * self.size * 1.25 - self.size)
         self.deck_rect.topleft = xy_pos
 
-    def create_deck(self, ) -> list[Card]:
+    def create_deck(self) -> list[Card]:
         suits = ['h', 'd', 's', 'c']
         ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         for suit in suits:
             for rank in ranks:
-                self.cards.append(Card(self.size, suit, rank))
+                self.cards.append(Card(suit, rank))
 
     def shuffle(self) -> None:
         shuffle(self.cards)
@@ -97,12 +100,12 @@ class Deck:
                 if self.name == 'main': # we're clicking on the main deck
                     # draw new card
                     cards = self.draw_card()
-                    #print('draw card')
                 else: # pick up stack of cards
+                    cards = self.get_stack(mouse_pos)
+                    if len(cards) == 0: # no cards picked up, clicked on deck surface but not on a card
+                        return moving_stack, cards
                     moving_stack = True
                     self.last_mouse_pos = mouse_pos
-                    cards = self.get_stack(mouse_pos)
-                    #print(f'pick up stack {len(cards)}')}')
             elif self.name == 'main' and len(self.cards) == 0: # clicked on empty main deck to restock
                 moving_stack = True
         return moving_stack, cards

@@ -1,6 +1,6 @@
 from pygame import Surface, draw, font, transform
 from math import pi, sin, cos
-from CONSTANTS import BLACK, RED, WHITE, BLUE, TRANSPARENT
+from CONSTANTS import BLACK, RED, WHITE, BLUE, TRANSPARENT, SIZE
 
 class Suit:
     def __init__(self, size=100, suit='s') -> None:
@@ -91,11 +91,11 @@ class Suit:
         return image
     
 class Card:
-    def __init__(self, scale=200, suit='s', value='10') -> None:
+    def __init__(self, suit='s', value='10') -> None:
         font.init()
         self.suit = suit
         self.value = value
-        self.scale = scale
+        self.scale = SIZE
         self.back_image = None
         self.front_image = None
         self.face_up = False
