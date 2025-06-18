@@ -1,6 +1,6 @@
 from deck import Deck
 from pygame import display, time, event, mouse, QUIT, KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP, K_SPACE, K_ESCAPE
-from CONSTANTS import GREEN, DECKS
+from CONSTANTS import GREEN, DECKS, DOUBLECLICKTIME
 
 class MyGame:
     def __init__(self) -> None:
@@ -25,12 +25,30 @@ class MyGame:
                     pickup_deck = self.my_decks[deck].name
                 else: # add card to discard deck
                     self.my_decks['discard'].add_card(card_stack)
-                return pickup_deck
+                break
             elif len(card_stack) == 0 and moving_stack: # clicked on empty main deck
                 card_stack = self.my_decks['discard'].cards
                 self.my_decks['discard'].cards = [] # clear discard deck
                 self.my_decks['main'].add_card(card_stack)
                 #self.my_decks['main'].cards.reverse() # flip the stack
+        return pickup_deck
+    
+    def handle_double_click(self) -> None:
+        card = None # start with no card
+        original_deck = '' # start with no original deck
+        dropped = False
+        for deck in self.my_decks: # check each deck in turn
+            card, original_deck = self.my_decks[deck].handle_double_click(mouse.get_pos())
+            if card is not None: # found a card to move
+                print(f'Double clicked on {deck} deck, card: {card}')
+                for deck in self.my_decks: # check each deck in turn
+                    if 'final' in deck: # try drop card on final stacks
+                        dropped = self.my_decks[deck].build_final_decks(card)
+                        if dropped:
+                            break
+        if not dropped and original_deck != '': # if not dropped on final stack, return card to original deck
+            self.my_decks[original_deck].add_card([card]) # return card from original deck
+        return
 
     def handle_stack_drop(self, pickup_deck) -> None:
         if len(self.my_decks['mobile'].cards) > 0: # we're moving cards
@@ -50,6 +68,8 @@ class MyGame:
         display.flip()
 
     def run(self) -> None:
+        db_clock = time.Clock()
+        game_clock = time.Clock()
         run = True
         pickup_deck = ''
         while run:
@@ -62,11 +82,14 @@ class MyGame:
                     elif each_event.key == K_SPACE: # pick another card
                         self.my_decks['discard'].add_card(self.my_decks['main'].draw_card())
                 elif each_event.type == MOUSEBUTTONDOWN and each_event.button == 1: # left mouse button clicked
-                    pickup_deck = self.handle_mouse_click(pickup_deck)
+                    if db_clock.tick() < DOUBLECLICKTIME:
+                        self.handle_double_click() # handle double click
+                    else:
+                        pickup_deck = self.handle_mouse_click(pickup_deck)
                 elif each_event.type == MOUSEBUTTONUP and each_event.button == 1: # left mouse button released
                     self.handle_stack_drop(pickup_deck)
             self.my_decks['mobile'].deck_rect.center = mouse.get_pos()
-            time.wait(10)
+            game_clock.tick(60)  # limit to 60 FPS
             self.update_screen()
 
 if __name__ == '__main__':
