@@ -29,8 +29,8 @@ class MyGame:
             elif len(card_stack) == 0 and moving_stack: # clicked on empty main deck
                 card_stack = self.my_decks['discard'].cards
                 self.my_decks['discard'].cards = [] # clear discard deck
+                card_stack.reverse() # flip the stack
                 self.my_decks['main'].add_card(card_stack)
-                #self.my_decks['main'].cards.reverse() # flip the stack
         return pickup_deck
     
     def handle_double_click(self) -> None:
