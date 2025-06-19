@@ -18,7 +18,7 @@ class Deck:
 
     def empty_deck(self) -> Surface:
         if 'game' in self.name: # game decks are larger
-            image = Surface((self.size * 0.7, self.size + self.size *12 * 0.1))
+            image = Surface((self.size * 0.7, self.size + self.size *19 * 0.1))
         else:
             image = Surface((self.size * 0.7, self.size))
         image.set_colorkey(TRANSPARENT)
@@ -71,7 +71,10 @@ class Deck:
                 self.deck_display.blit(self.cards[-1].back_image, self.cards[-1].position)
             else:
                 for card in self.cards:
-                    self.deck_display.blit(card.front_image, card.position)
+                    if card.face_up:
+                        self.deck_display.blit(card.front_image, card.position)
+                    else:
+                        self.deck_display.blit(card.back_image, card.position)
         return
         
     def add_card(self, card_stack : list[Card]) -> None:
@@ -170,6 +173,10 @@ class Deck:
             return [self.cards.pop()] # if we're the discard pile, just return the top card
         elif 'final' in self.name:
             return [] # you can't pick up cards from final stacks
+        elif 'game' in self.name and len(self.cards) > 0:
+            if self.cards[-1].rect.collidepoint(mouse_pos) and not self.cards[-1].face_up:
+                self.cards[-1].face_up = True  # flip the top card face up if it was face down
+                return []
         card_stack = []
         card_index = -1
         # find the top card that was clicked

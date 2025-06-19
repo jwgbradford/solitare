@@ -66,11 +66,23 @@ class MyGame:
             self.screen.blit(self.my_decks[deck].deck_display, self.my_decks[deck].deck_rect)
         display.flip()
 
+    def deal_cards(self) -> None:
+        cards_to_deal = 1
+        for deck in self.my_decks:
+            if 'game' in deck:
+                for _ in range(cards_to_deal):
+                    if len(self.my_decks['main'].cards) > 0:
+                        self.my_decks[deck].add_card(self.my_decks['main'].draw_card())
+                        self.my_decks[deck].cards[-1].face_up = False
+                self.my_decks[deck].cards[-1].face_up = True # last card in each game stack is face up
+                cards_to_deal += 1
+
     def run(self) -> None:
         db_clock = time.Clock()
         game_clock = time.Clock()
         run = True
         pickup_deck = ''
+        self.deal_cards()  # deal initial cards
         while run:
             for each_event in event.get():
                 if each_event.type == QUIT:
