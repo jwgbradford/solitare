@@ -153,17 +153,22 @@ class Deck:
         elif ('game' in self.name 
             and
             (
-            (my_top_card.suit == 'h' or my_top_card.suit == 'd'
-                and
-                moving_bottom_card.suit == 'c' or moving_bottom_card.suit == 's')
-            or
-            (my_top_card.suit == 'c' or my_top_card.suit == 's'
-                and
-                moving_bottom_card.suit == 'h' or moving_bottom_card.suit == 'd')
+                (
+                (my_top_card.suit == 'h' or my_top_card.suit == 'd')
+                    and
+                    (moving_bottom_card.suit == 'c' or moving_bottom_card.suit == 's')
+                )
+                or
+                (
+                (my_top_card.suit == 'c' or my_top_card.suit == 's')
+                    and
+                    (moving_bottom_card.suit == 'h' or moving_bottom_card.suit == 'd')
+                )
             )
             and
                 moving_bottom_card.value == my_top_card.value - 1
             ):
+            print(f'my_top_card: {my_top_card.suit}, moving_bottom_card: {moving_bottom_card.suit}')
             return True # game stacks take different suits in descending order
         else:
             return False
