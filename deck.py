@@ -168,7 +168,6 @@ class Deck:
             and
                 moving_bottom_card.value == my_top_card.value - 1
             ):
-            print(f'my_top_card: {my_top_card.suit}, moving_bottom_card: {moving_bottom_card.suit}')
             return True # game stacks take different suits in descending order
         else:
             return False

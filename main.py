@@ -1,11 +1,12 @@
 from deck import Deck, Card
-from pygame import display, time, event, mouse, QUIT, KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP, K_SPACE, K_ESCAPE
+from pygame import init, quit, display, time, event, mouse, font, QUIT, KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP, K_SPACE, K_ESCAPE
 from CONSTANTS import GREEN, DECKS, DOUBLECLICKTIME
 
 class MyGame:
     def __init__(self) -> None:
+        init()
         self.screen = display.set_mode((1500, 900))
-        self.add_decks()
+        self.my_font = font.Font(None, 36)
 
     def add_decks(self) -> None:
         self.my_decks = {}
@@ -64,7 +65,17 @@ class MyGame:
         for deck in self.my_decks:
             self.my_decks[deck].draw_deck()
             self.screen.blit(self.my_decks[deck].deck_display, self.my_decks[deck].deck_rect)
+        self.display_game_time()
         display.flip()
+
+    def display_game_time(self) -> None:
+        game_time = time.get_ticks() - self.game_time
+        minutes = game_time // 60000
+        seconds = (game_time // 1000) % 60
+        microseconds = (game_time // 10) % 100  # hundredths of a second
+        time_string = f'Time: {minutes:02}:{seconds:02}:{microseconds:02}'
+        text_surface = self.my_font.render(time_string, True, (5, 5, 5))
+        self.screen.blit(text_surface, (480, 120))
 
     def deal_cards(self) -> None:
         cards_to_deal = 1
@@ -77,13 +88,22 @@ class MyGame:
                 self.my_decks[deck].cards[-1].face_up = True # last card in each game stack is face up
                 cards_to_deal += 1
 
-    def run(self) -> None:
+    def check_game_over(self) -> bool:
+        for deck in self.my_decks:
+            if 'final' in deck and len(self.my_decks[deck].cards) < 13:
+                return False
+        return True
+
+    def play_game(self) -> None:
         db_clock = time.Clock()
         game_clock = time.Clock()
+        self.game_time = time.get_ticks()
         run = True
         pickup_deck = ''
+        self.add_decks()
         self.deal_cards()  # deal initial cards
         while run:
+            run = not self.check_game_over()
             for each_event in event.get():
                 if each_event.type == QUIT:
                     run = False
@@ -102,6 +122,21 @@ class MyGame:
             self.my_decks['mobile'].deck_rect.center = mouse.get_pos()
             game_clock.tick(60)  # limit to 60 FPS
             self.update_screen()
+
+    def run(self) -> None:
+        self.play_game()
+        play_game = True
+        while play_game:
+            for each_event in event.get():
+                if each_event.type == QUIT:
+                    play_game = False
+                elif each_event.type == KEYDOWN: # handle key events
+                    if each_event.key == K_ESCAPE: # quit
+                        play_game = False
+                    elif each_event.key == K_SPACE: # pick another card
+                        self.play_game()
+        quit()
+        raise SystemExit("Game Over")
 
 if __name__ == '__main__':
     my_game = MyGame()
