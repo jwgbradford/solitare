@@ -1,4 +1,4 @@
-from deck import Deck
+from deck import Deck, Card
 from pygame import display, time, event, mouse, QUIT, KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP, K_SPACE, K_ESCAPE
 from CONSTANTS import GREEN, DECKS, DOUBLECLICKTIME
 
@@ -35,19 +35,18 @@ class MyGame:
     
     def handle_double_click(self) -> None:
         card = None # start with no card
-        original_deck = '' # start with no original deck
         dropped = False
         for deck in self.my_decks: # check each deck in turn
-            card, original_deck = self.my_decks[deck].handle_double_click(mouse.get_pos())
+            card  = self.my_decks[deck].handle_double_click(mouse.get_pos())
             if card is not None: # found a card to move
-                print(f'Double clicked on {deck} deck, card: {card}')
                 for deck in self.my_decks: # check each deck in turn
                     if 'final' in deck: # try drop card on final stacks
                         dropped = self.my_decks[deck].build_final_decks(card)
                         if dropped:
                             break
-        if not dropped and original_deck != '': # if not dropped on final stack, return card to original deck
-            self.my_decks[original_deck].add_card([card]) # return card from original deck
+                break
+        if not dropped and isinstance(card, Card): # if not dropped on a final stack
+            self.my_decks[deck].add_card([card]) # return card to original deck
         return
 
     def handle_stack_drop(self, pickup_deck) -> None:

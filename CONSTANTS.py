@@ -6,7 +6,7 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PINK = (255, 102, 204)
 
-DOUBLECLICKTIME = 500
+DOUBLECLICKTIME = 250
 
 SIZE = 200 # card size
 OVERLAP = 0.1 # card overlap in game stacks

@@ -168,6 +168,8 @@ class Deck:
     def get_stack(self, mouse_pos) -> list[Card]:
         if self.name == 'discard':
             return [self.cards.pop()] # if we're the discard pile, just return the top card
+        elif 'final' in self.name:
+            return [] # you can't pick up cards from final stacks
         card_stack = []
         card_index = -1
         # find the top card that was clicked
@@ -186,22 +188,24 @@ class Deck:
         card_stack.reverse()
         return card_stack
     
-    def handle_double_click(self, mouse_pos) -> tuple[Card, str]:
+    def handle_double_click(self, mouse_pos) -> Card:
         card = None  # no card to move
-        original_deck = ''
         if 'discard' in self.name or 'game' in self.name: # post cards from discard or game stacks to final stacks
+            if 'discard' in self.name and len(self.cards): # discard deck with at least one card
+                self.cards[-1].rect.topleft = (self.deck_rect.x, self.deck_rect.y) # update rect to current card position
+            elif len(self.cards) > 0: # game stack with at least one card
+                self.cards[-1].rect.topleft = (self.deck_rect.x, self.deck_rect.y + len(self.cards) * self.size * 0.1) # update rect to current card position
             if len(self.cards) > 0 and self.cards[-1].rect.collidepoint(mouse_pos):
-                original_deck = self.name
-                card = self.cards.pop()  # get the top card
-        return card, original_deck
+                card = self.cards.pop()  # get the top card            
+        return card
     
     def build_final_decks(self, card : Card) -> bool:
-        print(f"Deck size: {len(self.cards)}, Card value: {card.value}, Card suit: {card.suit}")
-        if len(self.cards) == 0 and card.value == 1:
+        if len(self.cards) == 0 and card.value == 1: # if the final stack is empty, it can take an ace
             self.add_card([card])
             return True
-        elif self.cards[-1].suit == card.suit and self.cards[-1].value == card.value - 1:
-            self.add_card([card])
-            return True
+        elif len(self.cards) > 0:  # if the final stack already has cards 
+            if self.cards[-1].suit == card.suit and self.cards[-1].value == card.value - 1:
+                self.add_card([card])
+                return True
         else:
             return False
