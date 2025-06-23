@@ -123,15 +123,12 @@ class Deck:
         return card_stack
 
     def next_card_in_stack(self, card_stack : list[Card]) -> bool:
-        if len(self.cards) == 0: # empty deck
-            if 'final' in self.name: # final stacks start with aces
-                if card_stack[0].value == 1: # ace
-                    return True
-                else:
-                    return False
-            elif 'game' in self.name: # empty game stacks can take any card
+        if len(self.cards) == 0: # empty stack
+            if 'final' in self.name and card_stack[0].value == 1: # final stacks start with aces
                 return True
-            else: # you can't drop cards on the discard pile or main deck
+            elif 'game' in self.name and card_stack[0].value == 13: # empty game stacks take King only
+                return True
+            else: # you can't drop cards on other empty stacks
                 return False 
         my_top_card = self.cards[-1]
         moving_bottom_card = card_stack[0]
